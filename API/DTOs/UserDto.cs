@@ -1,14 +1,20 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace API.DTOs;
 
 public class UserDto
 {
-public required string ID { get; set; }
- public required string Email { get; set; }
-public required string DisplayName { get; set; }
-public string? ImagUrl { get; set; }
-public required string Token { get; set; } 
+    [JsonPropertyName("id")]
+    public required string ID { get; set; }
+    [JsonPropertyName("email")]
+    public required string Email { get; set; }
+    [JsonPropertyName("displayName")]
+    public required string DisplayName { get; set; }
+    [JsonPropertyName("imageUrl")]
+    public string? ImageUrl { get; set; }
+    [JsonPropertyName("token")]
+    public required string Token { get; set; }
 
 
 }
