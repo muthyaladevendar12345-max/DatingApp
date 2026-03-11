@@ -12,9 +12,14 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
         return await context.Members.FindAsync(id);
     }
 
+    public async Task<Member?> GetMemberForUpdate(string id)
+    {
+        return await context.Members.Include(x => x.AppUser).SingleOrDefaultAsync(x => x.Id == id);
+    }
+
     public async Task<IReadOnlyList<Member>> GetMembersAsync()
     {
-       return await context.Members.ToListAsync();
+        return await context.Members.ToListAsync();
     }
 
     public async Task<IReadOnlyList<Photo>> GetPhotosForMemberAsync(string memberId)
@@ -24,17 +29,17 @@ public class MemberRepository(AppDbContext context) : IMemberRepository
             .ToListAsync();
     }
 
-    public Task<bool> SaveAllAsync()
+    public async Task<bool> SaveAllAsync()
     {
-        throw new NotImplementedException();
+        return await context.SaveChangesAsync() > 0;
     }
 
     public async Task<bool> SaveChangesAsync()
     {
-        return await context.SaveChangesAsync() > 0;    
+        return await context.SaveChangesAsync() > 0;
     }
 
-   
+
 
     public void Update(Member member)
     {

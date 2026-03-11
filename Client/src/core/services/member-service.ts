@@ -1,29 +1,40 @@
-import { HttpClient} from '@angular/common/http';
-import { inject, Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
-import { Member, Photo } from '../../types/member';
+import { EditableMember, Member, Photo } from '../../types/member';
+import { tap } from 'rxjs/operators';
 
 @Injectable({
   providedIn: 'root',
 })
 export class MemberService {
-private http=inject(HttpClient);
-private baseUrl = environment.apiUrl;
-getMembers(){
-  return this.http.get<Member[]>(this.baseUrl + 'members');
-}
-getMember(id:string){
-  return this.http.get<Member>(this.baseUrl + 'members/' + id);
-}
-getMemberPhotos(id:string){
-return this.http.get<Photo[]>(this.baseUrl + 'members/' + id +'/photos')
-}
-// private getHttpOptions(){
-//   return {
-//     headers: new HttpHeaders(
-//       {
-//       Authorization: 'Bearer ' + this.accountService.currentUser()?.token
-//     })
-//   }
-// }
+  private http = inject(HttpClient);
+  private baseUrl = environment.apiUrl;
+  editMode = signal(false);
+  member = signal<Member | null>(null);
+  getMembers() {
+    return this.http.get<Member[]>(this.baseUrl + 'members');
+  }
+  getMember(id: string) {
+    return this.http.get<Member>(this.baseUrl + 'members/' + id).pipe(
+      tap(member => {
+        this.member.set(member)
+      })
+    );
+  }
+  getMemberPhotos(id: string) {
+    return this.http.get<Photo[]>(this.baseUrl + 'members/' + id + '/photos')
+  }
+  // private getHttpOptions(){
+  //   return {
+  //     headers: new HttpHeaders(
+  //       {
+  //       Authorization: 'Bearer ' + this.accountService.currentUser()?.token
+  //     })
+  //   }
+  // }
+  updateMember(member: EditableMember) {
+    return this.http.put(this.baseUrl + 'members', member)
+  }
+
 }
